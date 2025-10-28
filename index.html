@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <script>console.log('index.html carregado');</script>
+  <title>Sorteador por Curso</title>
+  <meta name="description" content="Sorteador" />
+  <!-- SheetJS para ler XLSX/CSV no navegador (mantido no head) -->
+  <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+
+  <!-- CSS externo -->
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <header>
+    <div class="wrap">
+      <h1>Sorteador - FCI</h1>
+    </div>
+  </header>
+
+  <main class="wrap">
+    <!-- todo: conteúdo idêntico ao original (mantido) -->
+    <!-- ...existing code... -->
+    <div class="grid" id="configView">
+      <section class="card">
+        <h2>1) Carregar planilha</h2>
+        <label>Arquivo (.xlsx ou .csv)</label>
+        <input type="file" id="fileInput" accept=".xlsx,.xls,.csv" />
+        <div class="mini">A planilha deve conter ao menos as colunas de RA, Nome, Curso, Turno e Presença (com valores livres, ex.: "sim/não", "presente/ausente", etc.).</div>
+        <div id="fileMeta" class="mini" style="margin-top:8px"></div>
+        <div id="sampleContainer" class="mini" style="margin-top:8px"></div>
+      </section>
+
+      <section class="card">
+        <h2>2) Mapear colunas</h2>
+        <div class="row">
+          <div>
+            <label>Coluna RA</label>
+            <select id="colRA"></select>
+          </div>
+          <div>
+            <label>Coluna Nome</label>
+            <select id="colNome"></select>
+          </div>
+        </div>
+        <div class="row">
+          <div>
+            <label>Coluna Curso</label>
+            <select id="colCurso"></select>
+          </div>
+          <div>
+            <label>Coluna Turno</label>
+            <select id="colTurno"></select>
+          </div>
+        </div>
+        <div class="row">
+          <div>
+            <label>Coluna Presença</label>
+            <select id="colPresenca"></select>
+          </div>
+          <div>
+            <label>Coluna Turma (opcional)</label>
+            <select id="colTurma"></select>
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <div class="grid" id="rulesView">
+      <section class="card">
+        <h2>3) Regras</h2>
+        <div class="row">
+          <div>
+            <label>Quantidade máxima de cursos a sortear (até 8)</label>
+            <input id="limitCursos" type="number" min="1" max="8" value="8" />
+          </div>
+          <div>
+            <label>Critérios que significam “Presente” (separar por vírgula)</label>
+            <input id="tokensPresente" type="text" value="presente, sim, yes, y, 1, x" />
+          </div>
+        </div>
+        <div class="row">
+          <div>
+            <label>Rótulos que significam “Noturno” (separar por vírgula)</label>
+            <input id="tokensNoturno" type="text" value="noite, noturno" />
+          </div>
+          <div>
+            <label>Deduplicação por RA</label>
+            <select id="dedupeStrategy">
+              <option value="last">Manter a última ocorrência</option>
+              <option value="first">Manter a primeira ocorrência</option>
+            </select>
+          </div>
+        </div>
+        <div class="mini" style="margin-top:6px">Regra: para registros cujo turno ∈ Noturno, exige “Presente”; para os demais (Diurno/EaD), presença não é exigida.</div>
+      </section>
+
+      <section class="card">
+        <h2>4) Ações</h2>
+        <div class="bar">
+          <button class="btn" id="btnPreview">Pré-visualizar cursos & elegíveis</button>
+          <button class="btn good" id="btnSortear">Sortear Agora</button>
+          <a class="btn secondary" id="btnAbrirTelao" href="#" target="_blank">Abrir Telão</a>
+        </div>
+        <div id="previewBox" class="mini" style="margin-top:10px"></div>
+      </section>
+    </div>
+
+    <section class="card" id="resultadoView">
+      <h2>Resultado</h2>
+      <div class="tag" id="stats"></div>
+      <div class="sep"></div>
+
+      <div class="bar" style="margin-bottom:8px">
+        <span class="pill" id="pillCursos"></span>
+        <span class="pill" id="pillExtras"></span>
+      </div>
+
+      <div class="results" id="cards"></div>
+    </section>
+
+    <section class="card hidden" id="telaoView">
+      <div class="telaoHeader">
+        <div class="telaoBrand">
+          <img src="logo.png" alt="Logo" />
+        </div>
+        <div style="flex:1">
+          <div class="telaoBrand title">Sorteador</div>
+        </div>
+        <div class="bar" style="margin-left:auto">
+          <button class="btn" id="btnFullscreen">Tela Cheia</button>
+        </div>
+      </div>
+      <div class="stage" id="stage"></div>
+    </section>
+  </main>
+
+  <div class="confetti" id="confetti"></div>
+
+  <footer>
+    Desenvolvido pelo Prof. Thiago G. Traue
+  </footer>
+
+  
+  <script src="app.js"></script>
+</body>
+</html>
